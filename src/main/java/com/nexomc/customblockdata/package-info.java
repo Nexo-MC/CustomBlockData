@@ -22,4 +22,4 @@
 /**
  * The root package of the CustomBlockData API
  */
-package com.jeff_media.customblockdata;
+package com.nexomc.customblockdata;

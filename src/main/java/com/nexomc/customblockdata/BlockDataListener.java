@@ -20,10 +20,10 @@
  * Donations: https://paypal.me/mfnalex
  */
 
-package com.jeff_media.customblockdata;
+package com.nexomc.customblockdata;
 
-import com.jeff_media.customblockdata.events.CustomBlockDataMoveEvent;
-import com.jeff_media.customblockdata.events.CustomBlockDataRemoveEvent;
+import com.nexomc.customblockdata.events.CustomBlockDataMoveEvent;
+import com.nexomc.customblockdata.events.CustomBlockDataRemoveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

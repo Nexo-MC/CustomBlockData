@@ -20,33 +20,22 @@
  * Donations: https://paypal.me/mfnalex
  */
 
-package com.jeff_media.customblockdata.events;
+package com.nexomc.customblockdata.events;
 
-import com.jeff_media.customblockdata.CustomBlockData;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Called when a block with CustomBlockData is moved by a piston to a new location.
- *
- * Blocks with protected CustomBlockData (see {@link CustomBlockData#isProtected()} will not trigger this event, however
- * it is possible that unprotected CustomBlockData will be moved to a destination block with protected CustomBlockData. You have
- * to cancel this event yourself to prevent this.
+ * Called when a block's CustomBlockData is about to be removed because the block was broken, replaced, or has changed in other ways.
  */
-public class CustomBlockDataMoveEvent extends CustomBlockDataEvent {
+public class CustomBlockDataRemoveEvent extends CustomBlockDataEvent {
 
-    private final @NotNull Block blockTo;
-
-    public CustomBlockDataMoveEvent(@NotNull Plugin plugin, @NotNull Block blockFrom, @NotNull Block blockTo, @NotNull Event bukkitEvent) {
-        super(plugin, blockFrom, bukkitEvent);
-        this.blockTo = blockTo;
-    }
-
-    public @NotNull Block getBlockTo() {
-        return blockTo;
+    public CustomBlockDataRemoveEvent(@NotNull Plugin plugin, @NotNull Block block, @Nullable Event bukkitEvent) {
+        super(plugin, block, bukkitEvent);
     }
 
 }

@@ -20,7 +20,7 @@
  * Donations: https://paypal.me/mfnalex
  */
 
-package com.jeff_media.customblockdata;
+package com.nexomc.customblockdata;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -170,6 +170,14 @@ public class CustomBlockData implements PersistentDataContainer {
         this.plugin = plugin;
     }
 
+    public CustomBlockData(final @NotNull World world, final int x, final int y, final int z, final @NotNull Plugin plugin) {
+        this.chunk = world.getChunkAt(x, z);
+        this.key = new NamespacedKey(plugin, getKey(x, y, z));
+        this.pdc = getPersistentDataContainer();
+        this.blockEntry = getBlockEntry(world, x, y, z);
+        this.plugin = plugin;
+    }
+
     /**
      * Gets the PersistentDataContainer associated with the given block and plugin
      *
@@ -208,6 +216,12 @@ public class CustomBlockData implements PersistentDataContainer {
     private static Map.Entry<UUID, BlockVector> getBlockEntry(final @NotNull Block block) {
         final UUID uuid = block.getWorld().getUID();
         final BlockVector blockVector = new BlockVector(block.getX(), block.getY(), block.getZ());
+        return new AbstractMap.SimpleEntry<>(uuid, blockVector);
+    }
+
+    private static Map.Entry<UUID, BlockVector> getBlockEntry(final @NotNull World world, final int x, final int y, final int z) {
+        final UUID uuid = world.getUID();
+        final BlockVector blockVector = new BlockVector(x, y , z);
         return new AbstractMap.SimpleEntry<>(uuid, blockVector);
     }
 
@@ -262,6 +276,14 @@ public class CustomBlockData implements PersistentDataContainer {
         final int x = block.getX() & 0x000F;
         final int y = block.getY();
         final int z = block.getZ() & 0x000F;
+        return "x" + x + "y" + y + "z" + z;
+    }
+
+    @NotNull
+    static String getKey(final int blockX, final int blockY, final int blockZ) {
+        final int x = blockX & 0x000F;
+        final int y = blockY;
+        final int z = blockZ & 0x000F;
         return "x" + x + "y" + y + "z" + z;
     }
 
@@ -321,7 +343,7 @@ public class CustomBlockData implements PersistentDataContainer {
      * will <b>not</b> be registered by this (but pull requests are welcome, of course)
      * <p>
      * For example, when you call this method in onEnable, CustomBlockData will now get automatically removed from a block
-     * when a player breaks this block. It will additionally call custom events like {@link com.jeff_media.customblockdata.events.CustomBlockDataRemoveEvent}.
+     * when a player breaks this block. It will additionally call custom events like {@link com.nexomc.customblockdata.events.CustomBlockDataRemoveEvent}.
      * Those events implement {@link org.bukkit.event.Cancellable}. If one of the CustomBlockData events is cancelled,
      * it will not alter any CustomBlockData.
      *

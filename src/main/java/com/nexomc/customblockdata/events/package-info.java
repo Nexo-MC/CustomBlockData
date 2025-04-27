@@ -22,4 +22,4 @@
 /**
  * Classes dedicated to handling triggered code executions
  */
-package com.jeff_media.customblockdata.events;
+package com.nexomc.customblockdata.events;

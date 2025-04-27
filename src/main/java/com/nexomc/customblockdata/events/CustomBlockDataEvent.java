@@ -20,9 +20,9 @@
  * Donations: https://paypal.me/mfnalex
  */
 
-package com.jeff_media.customblockdata.events;
+package com.nexomc.customblockdata.events;
 
-import com.jeff_media.customblockdata.CustomBlockData;
+import com.nexomc.customblockdata.CustomBlockData;
 import org.bukkit.block.Block;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

@@ -64,7 +64,7 @@ You must shade (and you should relocate) the `customblockdata` package.
       <configuration>
         <relocations>
           <relocation>
-            <pattern>com.jeff_media.customblockdata</pattern>
+            <pattern>com.nexomc.customblockdata</pattern>
             <shadedPattern>YOUR.PACKAGE.NAME.customblockdata</shadedPattern>
           </relocation>
         </relocations>
@@ -105,7 +105,7 @@ You must shade (and you should relocate) the `customblockdata` package. You will
 
 ```groovy
 shadowJar {
-    relocate 'com.jeff_media.customblockdata', 'your.package.customblockdata'
+    relocate 'com.nexomc.customblockdata', 'your.package.customblockdata'
 }
 ```
 
