@@ -22,6 +22,7 @@
 
 package com.nexomc.customblockdata;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -40,9 +41,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Represents a {@link PersistentDataContainer} for a specific {@link Block}. Also provides some static utility methods
@@ -89,11 +87,6 @@ public class CustomBlockData implements PersistentDataContainer {
     private static final NamespacedKey PERSISTENCE_KEY = Objects.requireNonNull(NamespacedKey.fromString("customblockdata:protected"), "Could not create persistence NamespacedKey");
 
     /**
-     * Regex used to identify valid CustomBlockData keys
-     */
-    private static final Pattern KEY_REGEX = Pattern.compile("^x(\\d+)y(-?\\d+)z(\\d+)$");
-
-    /**
      * The minimum X and Z coordinate of any block inside a chunk.
      */
     private static final int CHUNK_MIN_XZ = 0;
@@ -102,11 +95,6 @@ public class CustomBlockData implements PersistentDataContainer {
      * The maximum X and Z coordinate of any block inside a chunk.
      */
     private static final int CHUNK_MAX_XZ = (2 << 3) -1;
-
-    /**
-     * Whether WorldInfo#getMinHeight() method exists. In some very specific versions, it's directly declared in World.
-     */
-    private static final boolean HAS_MIN_HEIGHT_METHOD;
 
     private static boolean onFolia;
 
@@ -118,17 +106,6 @@ public class CustomBlockData implements PersistentDataContainer {
         } catch (ClassNotFoundException e) {
             onFolia = false;
         }
-    }
-
-    static {
-        boolean tmpHasMinHeightMethod = false;
-        try {
-            // Usually declared in WorldInfo, which World extends - except for some very specific versions
-            World.class.getMethod("getMinHeight");
-            tmpHasMinHeightMethod = true;
-        } catch (final ReflectiveOperationException ignored) {
-        }
-        HAS_MIN_HEIGHT_METHOD = tmpHasMinHeightMethod;
     }
 
     /**
@@ -292,24 +269,19 @@ public class CustomBlockData implements PersistentDataContainer {
      */
     @Nullable
     static Block getBlockFromKey(final NamespacedKey key, final Chunk chunk) {
-        final Matcher matcher = KEY_REGEX.matcher(key.getKey());
-        if (!matcher.matches()) return null;
-        final int x = Integer.parseInt(matcher.group(1));
-        final int y = Integer.parseInt(matcher.group(2));
-        final int z = Integer.parseInt(matcher.group(3));
-        if ((x < CHUNK_MIN_XZ || x > CHUNK_MAX_XZ) || (z < CHUNK_MIN_XZ || z > CHUNK_MAX_XZ) || (y < getWorldMinHeight(chunk.getWorld()) || y > chunk.getWorld().getMaxHeight() - 1))
-            return null;
-        return chunk.getBlock(x, y, z);
-    }
+        try {
+            int x = Integer.parseInt(StringUtils.substringBetween(key.value(), "x", "y"));
+            if (x < CHUNK_MIN_XZ || x > CHUNK_MAX_XZ) return null;
+            int z = Integer.parseInt(StringUtils.substringAfter(key.value(), "z"));
+            if (z < CHUNK_MIN_XZ || z > CHUNK_MAX_XZ) return null;
+            int y = Integer.parseInt(StringUtils.substringBetween(key.value(), "y", "Z"));
+            World world = chunk.getWorld();
+            if (y < world.getMinHeight() || y > world.getMaxHeight()) return null;
 
-    /**
-     * Returns the given {@link World}'s minimum build height, or 0 if not supported in this Bukkit version
-     */
-    static int getWorldMinHeight(final World world) {
-        if (HAS_MIN_HEIGHT_METHOD) {
-            return world.getMinHeight();
-        } else {
-            return 0;
+            return chunk.getBlock(x, y, z);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

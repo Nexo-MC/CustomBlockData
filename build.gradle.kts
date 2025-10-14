@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = "com.nexomc"
-version = "1.0"
+version = "1.1"
 description = "CustomBlockData"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.disableAutoTargetJvm()
@@ -54,8 +54,8 @@ publishing {
             val url = if (isSnapshot) repo + "snapshots" else repo + "releases"
             setUrl(url)
             credentials {
-                username = project.findProperty("MAVEN_USERNAME") as String?
-                password = project.findProperty("MAVEN_PASSWORD") as String?
+                username = project.findProperty("mineinabyssMavenUsername") as String?
+                password = project.findProperty("mineinabyssMavenPassword") as String?
             }
         }
     }
