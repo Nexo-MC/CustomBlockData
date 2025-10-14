@@ -274,7 +274,7 @@ public class CustomBlockData implements PersistentDataContainer {
             if (x < CHUNK_MIN_XZ || x > CHUNK_MAX_XZ) return null;
             int z = Integer.parseInt(StringUtils.substringAfter(key.value(), "z"));
             if (z < CHUNK_MIN_XZ || z > CHUNK_MAX_XZ) return null;
-            int y = Integer.parseInt(StringUtils.substringBetween(key.value(), "y", "Z"));
+            int y = Integer.parseInt(StringUtils.substringBetween(key.value(), "y", "z"));
             World world = chunk.getWorld();
             if (y < world.getMinHeight() || y > world.getMaxHeight()) return null;
 
