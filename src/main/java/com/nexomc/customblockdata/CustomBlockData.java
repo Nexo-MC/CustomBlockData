@@ -376,10 +376,17 @@ public class CustomBlockData implements PersistentDataContainer {
     @NotNull
     private static Set<Block> getBlocksWithCustomData(final @NotNull Chunk chunk, final @NotNull NamespacedKey namespace) {
         final PersistentDataContainer chunkPDC = chunk.getPersistentDataContainer();
-        return chunkPDC.getKeys().stream().filter(key -> key.getNamespace().equals(namespace.getNamespace()))
-                .map(key -> getBlockFromKey(key, chunk))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+        final Set<Block> blocks = new HashSet<>();
+
+        for (NamespacedKey key : chunkPDC.getKeys()) {
+            if (key.getNamespace().equals(namespace.getNamespace())) {
+                Block block = getBlockFromKey(key, chunk);
+                if (block != null) {
+                    blocks.add(block);
+                }
+            }
+        }
+        return blocks;
     }
 
     /**
