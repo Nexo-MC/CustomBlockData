@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = "com.nexomc"
-version = "1.1"
+version = "1.1.1"
 description = "CustomBlockData"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.disableAutoTargetJvm()
