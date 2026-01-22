@@ -1,22 +1,21 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `java-library`
     `maven-publish`
-    signing
-    id("com.gradleup.nmcp").version("0.0.8")
+    kotlin("jvm") version "2.2.0"
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven("https://repo.jeff-media.com/public/")
-    maven("https://repo.nexomc.com/public/")
+    maven("https://repo.nexomc.com/releases/")
     maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
     compileOnly(libs.paper)
-    compileOnly(libs.folia)
+    //compileOnly(libs.folia)
     compileOnly(libs.jetbrains.annotations)
 
     testImplementation(libs.junit.junit)
@@ -24,17 +23,15 @@ dependencies {
 }
 
 group = "com.nexomc"
-version = "1.1.1"
+version = "1.2"
 description = "CustomBlockData"
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.disableAutoTargetJvm()
 
 java {
     withSourcesJar()
     withJavadocJar()
 
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
@@ -67,4 +64,8 @@ publishing {
             version = rootProject.version.toString()
         }
     }
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.compilerOptions {
+    freeCompilerArgs.set(listOf("-Xannotation-default-target=param-property"))
 }

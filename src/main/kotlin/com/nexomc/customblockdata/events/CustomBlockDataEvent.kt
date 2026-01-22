@@ -19,23 +19,20 @@
  *
  * Donations: https://paypal.me/mfnalex
  */
+package com.nexomc.customblockdata.events
 
-package com.nexomc.customblockdata.events;
-
-import com.nexomc.customblockdata.CustomBlockData;
-import org.bukkit.block.Block;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.block.*;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.world.StructureGrowEvent;
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
-import java.util.List;
+import com.nexomc.customblockdata.CustomBlockData
+import org.bukkit.block.Block
+import org.bukkit.event.Cancellable
+import org.bukkit.event.Event
+import org.bukkit.event.HandlerList
+import org.bukkit.event.block.*
+import org.bukkit.event.entity.EntityChangeBlockEvent
+import org.bukkit.event.entity.EntityExplodeEvent
+import org.bukkit.event.world.StructureGrowEvent
+import org.bukkit.plugin.Plugin
+import org.jetbrains.annotations.NotNull
+import java.util.*
 
 /**
  * Represents an event that removes, changes or moves CustomBlockData due to regular Bukkit Events.
@@ -45,166 +42,150 @@ import java.util.List;
  *
  * If this event is cancelled, CustomBlockData will not be removed, changed or moved.
  */
-public class CustomBlockDataEvent extends Event implements Cancellable {
-
-    private static final HandlerList HANDLERS = new HandlerList();
-
-    final @NotNull Plugin plugin;
-    final @NotNull Block block;
-    final @NotNull CustomBlockData cbd;
-    final @NotNull Event bukkitEvent;
-    boolean isCancelled = false;
-
-    protected CustomBlockDataEvent(@NotNull Plugin plugin, @NotNull Block block, @NotNull Event bukkitEvent) {
-        this.plugin = plugin;
-        this.block = block;
-        this.bukkitEvent = bukkitEvent;
-        this.cbd = new CustomBlockData(block, plugin);
-    }
-
+open class CustomBlockDataEvent protected constructor(
+    val plugin: Plugin,
     /**
      * Gets the block involved in this event.
      */
-    public @NotNull Block getBlock() {
-        return block;
-    }
-
+    val block: Block,
     /**
      * Gets the underlying Bukkit Event that has caused this event to be called. The Bukkit Event is currently listened
      * on in MONITOR priority.
      */
-    public @NotNull Event getBukkitEvent() {
-        return bukkitEvent;
-    }
-
+    @NotNull val bukkitEvent: Event
+) : Event(), Cancellable {
     /**
      * Gets the CustomBlockData involved in this event.
      */
-    public @NotNull CustomBlockData getCustomBlockData() {
-        return cbd;
-    }
+    val customBlockData: CustomBlockData = CustomBlockData(block, plugin)
+    //var isCancelled: Boolean = false
 
     /**
      * Gets the cancellation status of this event.
      */
-    @Override
-    public boolean isCancelled() {
-        return isCancelled;
+    override fun isCancelled(): Boolean {
+        return isCancelled
     }
 
     /**
      * Sets the cancellation status of this event. If the event is cancelled, the CustomBlockData will not be removed, changed or moved.
      */
-    @Override
-    public void setCancelled(boolean cancel) {
-        this.isCancelled = cancel;
+    override fun setCancelled(cancel: Boolean) {
+        this.isCancelled = cancel
     }
 
-    /**
-     * Gets the reason for this change of CustomBlockData
-     */
-    public @NotNull Reason getReason() {
-        if (bukkitEvent == null) return Reason.UNKNOWN;
-        for (Reason reason : Reason.values()) {
-            if (reason == Reason.UNKNOWN) continue;
-            if (reason.eventClasses.stream().anyMatch(clazz -> clazz.equals(bukkitEvent.getClass()))) return reason;
+    val reason: Reason
+        /**
+         * Gets the reason for this change of CustomBlockData
+         */
+        get() {
+            for (reason in Reason.entries) {
+                if (reason == Reason.UNKNOWN) continue
+                if (reason.applicableEvents.stream()
+                        .anyMatch { clazz: Class<out Event?>? -> clazz == bukkitEvent.javaClass }
+                ) return reason
+            }
+            return Reason.UNKNOWN
         }
-        return Reason.UNKNOWN;
-    }
 
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return HANDLERS;
-    }
-
-    @NotNull
-    @Override
-    public HandlerList getHandlers() {
-        return HANDLERS;
+    override fun getHandlers(): HandlerList {
+        return handlerList
     }
 
     /**
      * Represents the reason for a change of CustomBlockData
      */
-    public enum Reason {
+    enum class Reason @SafeVarargs constructor(vararg eventClasses: Class<out Event?>?) {
         /**
          * Represents a block being broken by a player
          * @see BlockBreakEvent
          */
-        BLOCK_BREAK(BlockBreakEvent.class),
+        BLOCK_BREAK(BlockBreakEvent::class.java),
+
         /**
          * Represents a block being replaced by a new block (for example STONE being placed into a TALL_GRASS)
          * @see BlockPlaceEvent
+         *
          * @see BlockMultiPlaceEvent
          */
-        BLOCK_PLACE(BlockPlaceEvent.class, BlockMultiPlaceEvent.class),
+        BLOCK_PLACE(BlockPlaceEvent::class.java, BlockMultiPlaceEvent::class.java),
+
         /**
          * Represents a block being destroyed by an explosion
          * @see BlockExplodeEvent
+         *
          * @see EntityExplodeEvent
          */
-        EXPLOSION(EntityExplodeEvent.class, BlockExplodeEvent.class),
+        EXPLOSION(EntityExplodeEvent::class.java, BlockExplodeEvent::class.java),
+
         /**
          * Represents a block being moved by a piston
          * @see CustomBlockDataMoveEvent
+         *
          * @see BlockPistonExtendEvent
+         *
          * @see BlockPistonRetractEvent
          */
-        PISTON(BlockPistonExtendEvent.class, BlockPistonRetractEvent.class),
+        PISTON(BlockPistonExtendEvent::class.java, BlockPistonRetractEvent::class.java),
+
         /**
          * Represents a block being destroyed by fire
          * @see BlockBurnEvent
          */
-        BURN(BlockBurnEvent.class),
+        BURN(BlockBurnEvent::class.java),
+
         /**
-         * Represents a block being changed by an entity. An {@link EntityChangeBlockEvent} will only trigger removal
+         * Represents a block being changed by an entity. An [EntityChangeBlockEvent] will only trigger removal
          * of CustomBlockData when the block's material changes.
-         * <p>
+         *
+         *
          * Example: When a player steps on REDSTONE_ORE, an EntityChangeBlockEvent is called because the BlockState's
          * "lit" tag changes from false to true. However, this will not lead to removal of CustomBlockData because
          * the block's material is still REDSTONE_ORE.
          *
          */
-        ENTITY_CHANGE_BLOCK(EntityChangeBlockEvent.class),
+        ENTITY_CHANGE_BLOCK(EntityChangeBlockEvent::class.java),
+
         /**
-         * Represents a block being destroyed by melting, etc. A {@link BlockFadeEvent} will only trigger
+         * Represents a block being destroyed by melting, etc. A [BlockFadeEvent] will only trigger
          * removal of CustomBlockData when the block's material changes. The event will not be called for fire
          * burning out.
          * @see BlockFadeEvent
          */
-        FADE(BlockFadeEvent.class),
+        FADE(BlockFadeEvent::class.java),
+
         /**
          * Represents a block being changed by a structure (Sapling -> Tree, Mushroom -> Huge Mushroom), naturally or using bonemeal.
          * @see StructureGrowEvent
          */
-        STRUCTURE_GROW(StructureGrowEvent.class),
+        STRUCTURE_GROW(StructureGrowEvent::class.java),
+
         /**
          * Represents a block being changed by fertilizing a given block with bonemeal.
          * @see BlockFertilizeEvent
          */
-        FERTILIZE(BlockFertilizeEvent.class),
+        FERTILIZE(BlockFertilizeEvent::class.java),
+
         /**
          * Represents leaves decaying. This is currently not called because of performance reasons. In future versions,
          * there will be a method to enable listening to this.
-         * @deprecated Draft API
          */
-        @Deprecated
-        LEAVES_DECAY(LeavesDecayEvent.class),
+        @Deprecated("Draft API")
+        LEAVES_DECAY(LeavesDecayEvent::class.java),
 
-        UNKNOWN((Class<? extends Event>) null);
-
-        private final @NotNull List<Class<? extends Event>> eventClasses;
-
-        @SafeVarargs
-        Reason(Class<? extends Event>... eventClasses) {
-            this.eventClasses = Arrays.asList(eventClasses);
-        }
+        UNKNOWN(null as Class<out Event?>?);
 
         /**
          * Gets a list of Bukkit Event classes that are associated with this Reason
          */
-        public @NotNull List<Class<? extends Event>> getApplicableEvents() {
-            return this.eventClasses;
+        val applicableEvents: MutableList<Class<out Event?>?>
+
+        init {
+            this.applicableEvents = Arrays.asList<Class<out Event?>?>(*eventClasses)
         }
+    }
+
+    companion object {
+        val handlerList: HandlerList = HandlerList()
     }
 }

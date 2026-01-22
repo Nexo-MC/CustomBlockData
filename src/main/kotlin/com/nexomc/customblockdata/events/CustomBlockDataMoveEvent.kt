@@ -19,7 +19,19 @@
  *
  * Donations: https://paypal.me/mfnalex
  */
+package com.nexomc.customblockdata.events
+
+import com.nexomc.customblockdata.CustomBlockData
+import org.bukkit.block.Block
+import org.bukkit.event.Event
+import org.bukkit.plugin.Plugin
+
 /**
- * Classes dedicated to handling triggered code executions
+ * Called when a block with CustomBlockData is moved by a piston to a new location.
+ *
+ * Blocks with protected CustomBlockData (see [CustomBlockData.isProtected] will not trigger this event, however
+ * it is possible that unprotected CustomBlockData will be moved to a destination block with protected CustomBlockData. You have
+ * to cancel this event yourself to prevent this.
  */
-package com.nexomc.customblockdata.events;
+class CustomBlockDataMoveEvent(plugin: Plugin, blockFrom: Block, val blockTo: Block, bukkitEvent: Event) :
+    CustomBlockDataEvent(plugin, blockFrom, bukkitEvent)

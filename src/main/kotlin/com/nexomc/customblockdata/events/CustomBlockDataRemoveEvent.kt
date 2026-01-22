@@ -19,7 +19,14 @@
  *
  * Donations: https://paypal.me/mfnalex
  */
+package com.nexomc.customblockdata.events
+
+import org.bukkit.block.Block
+import org.bukkit.event.Event
+import org.bukkit.plugin.Plugin
+
 /**
- * The root package of the CustomBlockData API
+ * Called when a block's CustomBlockData is about to be removed because the block was broken, replaced, or has changed in other ways.
  */
-package com.nexomc.customblockdata;
+class CustomBlockDataRemoveEvent(plugin: Plugin, block: Block, bukkitEvent: Event?) :
+    CustomBlockDataEvent(plugin, block, bukkitEvent!!)

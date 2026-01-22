@@ -19,23 +19,15 @@
  *
  * Donations: https://paypal.me/mfnalex
  */
-
-package com.nexomc.customblockdata.events;
-
-import org.bukkit.block.Block;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 /**
- * Called when a block's CustomBlockData is about to be removed because the block was broken, replaced, or has changed in other ways.
+ * Classes dedicated to handling triggered code executions
  */
-public class CustomBlockDataRemoveEvent extends CustomBlockDataEvent {
+package com.nexomc.customblockdata.events
 
-    public CustomBlockDataRemoveEvent(@NotNull Plugin plugin, @NotNull Block block, @Nullable Event bukkitEvent) {
-        super(plugin, block, bukkitEvent);
-    }
+import com.nexomc.customblockdata.CustomBlockData
+import com.nexomc.customblockdata.events.CustomBlockDataEvent
+import com.nexomc.customblockdata.CustomBlockData.PaperOnly
+import com.nexomc.customblockdata.BlockDataListener
+import com.nexomc.customblockdata.events.CustomBlockDataRemoveEvent
+import com.nexomc.customblockdata.events.CustomBlockDataMoveEvent
 
-}
