@@ -23,8 +23,6 @@ package com.nexomc.customblockdata
 
 import com.nexomc.customblockdata.events.CustomBlockDataRemoveEvent
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
-import net.kyori.adventure.key.Key
-import org.apache.commons.lang3.StringUtils
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.NamespacedKey
@@ -38,7 +36,6 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.BlockVector
 import java.io.IOException
 import java.util.*
-import java.util.function.Consumer
 import kotlin.text.toInt
 
 /**
@@ -309,16 +306,12 @@ class CustomBlockData : PersistentDataContainer {
             'o',
             'm',
             '.',
-            'j',
+            'n',
             'e',
-            'f',
-            'f',
-            '_',
+            'x',
+            'o',
             'm',
-            'e',
-            'd',
-            'i',
-            'a',
+            'c',
             '.',
             'c',
             'u',
@@ -433,7 +426,7 @@ class CustomBlockData : PersistentDataContainer {
 
             DIRTY_BLOCKS.add(blockEntry)
             if (onFolia) {
-                Bukkit.getServer().globalRegionScheduler.runDelayed(plugin, Consumer { task: ScheduledTask? ->
+                Bukkit.getServer().globalRegionScheduler.runDelayed(plugin, {
                     DIRTY_BLOCKS.remove(blockEntry)
                 }, 1L)
             } else {
@@ -461,33 +454,29 @@ class CustomBlockData : PersistentDataContainer {
             val x = block.x and 0x000F
             val y = block.y
             val z = block.z and 0x000F
-            return "x" + x + "y" + y + "z" + z
+            return "x${x}y${y}z${z}"
         }
 
         fun getKey(blockX: Int, blockY: Int, blockZ: Int): String {
             val x = blockX and 0x000F
             val z = blockZ and 0x000F
-            return "x" + x + "y" + blockY + "z" + z
+            return "x${x}y${blockY}z${z}"
         }
+
+        private val CHUNK_RANGE_XZ = CHUNK_MIN_XZ..CHUNK_MAX_XZ
 
         /**
          * Gets the block represented by the given [NamespacedKey] in the given [Chunk]
          */
         fun getBlockFromKey(key: NamespacedKey, chunk: Chunk): Block? {
-            try {
-                val x = StringUtils.substringBetween(key.value(), "x", "y").toInt()
-                if (x !in CHUNK_MIN_XZ..CHUNK_MAX_XZ) return null
-                val z = StringUtils.substringAfter(key.value(), "z").toInt()
-                if (z !in CHUNK_MIN_XZ..CHUNK_MAX_XZ) return null
-                val y = StringUtils.substringBetween(key.value(), "y", "Z").toInt()
+            return runCatching {
                 val world = chunk.world
+                val (x, y, z) = key.value().split("x", "y", "z").map { it.toInt() }
+                if (x !in CHUNK_RANGE_XZ || z !in CHUNK_RANGE_XZ) return null
                 if (y !in world.minHeight..world.maxHeight) return null
 
                 return chunk.getBlock(x, y, z)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return null
-            }
+            }.getOrNull()
         }
 
         /**

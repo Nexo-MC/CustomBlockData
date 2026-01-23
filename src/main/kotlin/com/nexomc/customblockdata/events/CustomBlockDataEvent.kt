@@ -58,7 +58,7 @@ open class CustomBlockDataEvent protected constructor(
      * Gets the CustomBlockData involved in this event.
      */
     val customBlockData: CustomBlockData = CustomBlockData(block, plugin)
-    //var isCancelled: Boolean = false
+    private var isCancelled: Boolean = false
 
     /**
      * Gets the cancellation status of this event.
