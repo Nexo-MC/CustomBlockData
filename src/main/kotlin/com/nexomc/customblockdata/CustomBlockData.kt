@@ -371,7 +371,7 @@ class CustomBlockData : PersistentDataContainer {
         private var onFolia = false
 
         init {
-            checkRelocation()
+            //checkRelocation()
             try {
                 Class.forName("io.papermc.paper.threadedregions.RegionizedServer")
                 onFolia = true
