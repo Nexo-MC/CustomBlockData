@@ -23,7 +23,7 @@ dependencies {
 }
 
 group = "com.nexomc"
-version = "1.2"
+version = "1.2.1"
 description = "CustomBlockData"
 
 java {
