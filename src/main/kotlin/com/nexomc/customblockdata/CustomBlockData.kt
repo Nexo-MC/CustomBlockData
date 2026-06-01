@@ -36,6 +36,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.BlockVector
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.text.toInt
 
 /**
@@ -333,7 +334,7 @@ class CustomBlockData : PersistentDataContainer {
         /**
          * Set of "dirty block positions", that is blocks that have been modified and need to be saved to the chunk
          */
-        private val DIRTY_BLOCKS: MutableSet<Pair<UUID, BlockVector>> = HashSet<Pair<UUID, BlockVector>>()
+        private val DIRTY_BLOCKS: MutableSet<Pair<UUID, BlockVector>> = ConcurrentHashMap.newKeySet()
 
         /**
          * Builtin list of native PersistentDataTypes
@@ -368,26 +369,10 @@ class CustomBlockData : PersistentDataContainer {
          */
         private const val CHUNK_MAX_XZ = (2 shl 3) - 1
 
-        private var onFolia = false
-
-        init {
-            //checkRelocation()
-            try {
+        private val onFolia: Boolean by lazy {
+            runCatching {
                 Class.forName("io.papermc.paper.threadedregions.RegionizedServer")
-                onFolia = true
-            } catch (e: ClassNotFoundException) {
-                onFolia = false
-            }
-        }
-
-        /**
-         * Prints a nag message when the CustomBlockData package is not relocated
-         */
-        private fun checkRelocation() {
-            if (CustomBlockData::class.java.`package`.name == String(DEFAULT_PACKAGE)) {
-                val plugin = JavaPlugin.getProvidingPlugin(CustomBlockData::class.java)
-                plugin.logger.warning("Nag author(s) ${plugin.pluginMeta.authors.joinToString()} of plugin ${plugin.name} for not relocating the CustomBlockData package.")
-            }
+            }.getOrNull() != null
         }
 
         /**

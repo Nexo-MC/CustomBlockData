@@ -23,7 +23,8 @@ dependencies {
 }
 
 group = "com.nexomc"
-version = "1.2.1"
+val pluginVersion: String by project
+version = pluginVersion
 description = "CustomBlockData"
 
 java {
