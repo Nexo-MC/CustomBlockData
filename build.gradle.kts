@@ -52,8 +52,8 @@ publishing {
             val url = if (isSnapshot) repo + "snapshots" else repo + "releases"
             setUrl(url)
             credentials {
-                username = project.findProperty("mineinabyssMavenUsername") as String?
-                password = project.findProperty("mineinabyssMavenPassword") as String?
+                username = project.findProperty("nexomcUsername") as String?
+                password = project.findProperty("nexomcPassword") as String?
             }
         }
     }
